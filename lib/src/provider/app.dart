@@ -50,6 +50,12 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  void undoLastTaskRemoval() {
+    setState(() {
+      list.undoLastItemRemoval();
+    });
+  }
+
   void toggleTaskStatus({required TodoItem todoItem}) {
     setState(() {
       list.toggleItemStatus(todoItem: todoItem);
@@ -65,6 +71,17 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
   void addTodo({required String title, required String content}) {
     setState(() {
       list.addItem(todoItem: TodoItem.create(title: title, content: content));
+    });
+  }
+
+  void editTodo(
+      {required TodoItem originalItem, required TodoItem editedItem}) {
+    if (!originalItem.checkChanges(editedItem)) return;
+
+    setState(() {
+      originalItem
+        ..title = editedItem.title
+        ..content = editedItem.content;
     });
   }
 
@@ -97,15 +114,21 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
         deleteTodo: deleteTodo,
         addTodo: addTodo,
         saveTasks: saveTasks,
+        editTodo: editTodo,
+        undoLastTaskRemoval: undoLastTaskRemoval,
         child: widget.child);
   }
 }
 
 class AppState extends InheritedWidget {
   final TodoList list;
-  final void Function({required TodoItem todoItem}) toggleTaskStatus;
-  final void Function({required TodoItem todoItem}) deleteTodo;
+  final void Function({required TodoItem todoItem}) toggleTaskStatus,
+      deleteTodo;
   final void Function({required String title, required String content}) addTodo;
+  final void Function(
+      {required TodoItem originalItem, required TodoItem editedItem}) editTodo;
+
+  final void Function() undoLastTaskRemoval;
   final Future<void> Function() saveTasks;
 
   const AppState(
@@ -115,7 +138,9 @@ class AppState extends InheritedWidget {
       required this.toggleTaskStatus,
       required this.deleteTodo,
       required this.addTodo,
-      required this.saveTasks});
+      required this.saveTasks,
+      required this.editTodo,
+      required this.undoLastTaskRemoval});
 
   @override
   bool updateShouldNotify(covariant AppState oldWidget) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:widget/src/views/widgets/todo_form.dart';
+import 'package:widget/src/views/widgets/add_task_form.dart';
 
 class AddTaskView extends StatelessWidget {
   const AddTaskView({super.key});
@@ -14,7 +14,7 @@ class AddTaskView extends StatelessWidget {
         physics: AlwaysScrollableScrollPhysics(),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-          child: TodoForm(),
+          child: AddTaskForm(),
         ),
       ),
     );

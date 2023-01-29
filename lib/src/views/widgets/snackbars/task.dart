@@ -3,9 +3,24 @@ import 'package:widget/src/models/todo_item.dart';
 import 'package:widget/src/provider/app.dart';
 
 class TaskStackBar {
+  static SnackBar createDeleted(
+      {required TodoItem todoItem, required BuildContext context}) {
+    final undoLastTaskRemoval = AppState.of(context).undoLastTaskRemoval;
+
+    return SnackBar(
+      content: const Text("Tarefa excluída com sucesso!"),
+      action: SnackBarAction(
+        //TODO: Colocar a cor da label no Theme
+        textColor: Colors.white,
+        label: "Desfazer",
+        onPressed: () => undoLastTaskRemoval(),
+      ),
+    );
+  }
+
   static SnackBar createFinished(
       {required TodoItem todoItem, required BuildContext context}) {
-    return _create(
+    return _createToggleTaskStatusSnackbar(
         todoItem: todoItem,
         context: context,
         text: "Tarefa movida para aba \"Finalizados\"");
@@ -13,13 +28,13 @@ class TaskStackBar {
 
   static SnackBar createTodo(
       {required TodoItem todoItem, required BuildContext context}) {
-    return _create(
+    return _createToggleTaskStatusSnackbar(
         todoItem: todoItem,
         context: context,
         text: "Tarefa movida para aba \"A fazer\"");
   }
 
-  static SnackBar _create(
+  static SnackBar _createToggleTaskStatusSnackbar(
       {required TodoItem todoItem,
       required BuildContext context,
       required String text}) {

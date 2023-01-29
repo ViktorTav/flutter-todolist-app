@@ -2,7 +2,7 @@ import 'package:uuid/uuid.dart';
 import 'package:widget/src/types/json.dart';
 
 class TodoItem {
-  final String id, title, content;
+  String id, title, content;
   final DateTime createdAtTime;
   bool completed;
 
@@ -37,6 +37,10 @@ class TodoItem {
         completed: completed ?? false);
   }
 
+  bool checkChanges(TodoItem editedItem) {
+    return !(editedItem.content == content && editedItem.title == title);
+  }
+
   Json toJson() {
     return {
       "id": id,
@@ -48,7 +52,12 @@ class TodoItem {
   }
 
   @override
-  bool operator ==(covariant TodoItem other) => other.id == id;
+  bool operator ==(covariant TodoItem other) {
+    return other.completed == completed &&
+        other.content == content &&
+        other.title == title &&
+        other.createdAtTime == other.createdAtTime;
+  }
 
   @override
   int get hashCode => Object.hash(createdAtTime.microsecondsSinceEpoch, id);

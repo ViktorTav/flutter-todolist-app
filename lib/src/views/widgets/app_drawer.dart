@@ -114,8 +114,7 @@ class _AppDrawerMenuItem extends StatelessWidget {
   final bool selected;
 
   const _AppDrawerMenuItem(
-      {super.key,
-      required this.title,
+      {required this.title,
       required this.icon,
       required this.onTap,
       this.selected = false});

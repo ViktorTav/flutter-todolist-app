@@ -9,6 +9,7 @@ class TodoTasksView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("eae");
     final list = AppState.of(context).list.getUnFinishedList();
 
     final body = list.isEmpty

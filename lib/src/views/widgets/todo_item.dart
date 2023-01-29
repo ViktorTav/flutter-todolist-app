@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:widget/src/models/todo_item.dart';
 import 'package:widget/src/provider/app.dart';
+import 'package:widget/src/views/edit_task.dart';
 import 'package:widget/src/views/task_details.dart';
 import 'package:widget/src/views/widgets/snackbars/task.dart';
 
@@ -26,7 +27,22 @@ class TodoItemWidget extends StatelessWidget {
           TaskStackBar.createFinished(todoItem: todoItem, context: context);
     }
     AppState.of(context).toggleTaskStatus(todoItem: todoItem);
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(snackBar);
+  }
+
+  void _handleDeletePopupItemTap(BuildContext context) {
+    AppState.of(context).deleteTodo(todoItem: todoItem);
+    ScaffoldMessenger.of(context).showSnackBar(
+        TaskStackBar.createDeleted(todoItem: todoItem, context: context));
+  }
+
+  void _handleEditPopupItemTap(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditTaskView(todoItem: todoItem)));
   }
 
   @override
@@ -51,10 +67,18 @@ class TodoItemWidget extends StatelessWidget {
             onSelected: (Function f) => f(),
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Function>>[
               PopupMenuItem<Function>(
-                value: () =>
-                    AppState.of(context).deleteTodo(todoItem: todoItem),
-                child: const Text("Delete"),
-              )
+                value: () => _handleEditPopupItemTap(context),
+                child: const Text("Editar"),
+              ),
+              PopupMenuItem<Function>(
+                value: () => _handleDeletePopupItemTap(context),
+                child: Text(
+                  "Excluir",
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
             ],
           ),
           title: Text(

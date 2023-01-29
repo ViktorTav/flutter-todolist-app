@@ -8,9 +8,12 @@ class TodoList {
   final _unfinishedList = <TodoItem>[];
   final _finishedList = <TodoItem>[];
 
+  TodoItem? _lastDeletedItem;
+
   TodoList();
 
   List<TodoItem> get fullList => [..._unfinishedList, ..._finishedList];
+  TodoItem? get lastDeletedItem => _lastDeletedItem;
 
   void addAll({required List<TodoItem> list}) {
     for (var item in list) {
@@ -52,12 +55,29 @@ class TodoList {
     return null;
   }
 
+  void undoLastItemRemoval() {
+    if (_lastDeletedItem!.completed) {
+      return addFinishedItem(todoItem: _lastDeletedItem!);
+    }
+
+    addItem(todoItem: _lastDeletedItem!);
+
+    _lastDeletedItem = null;
+  }
+
   void removeItem({required TodoItem todoItem}) {
     final list = todoItem.completed ? _finishedList : _unfinishedList;
 
     if (!list.remove(todoItem)) {
       throw ItemNoExists();
     }
+
+    /*
+      Ao salvarmos o último item excluído é possível readicionar uma tarefa caso o usuário 
+      exclua ela sem querer.
+    */
+
+    _lastDeletedItem = todoItem;
   }
 
   void removeItemById({required String id}) {
