@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:widget/config.dart';
 import 'package:widget/src/provider/app.dart';
 import 'package:widget/src/routes/routes.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  runApp(const AppProvider(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -11,13 +12,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppProvider(
-      child: MaterialApp(
-          title: "TodoList",
-          theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue)),
-          initialRoute: "/todo",
-          onGenerateRoute: handleOnGenerateRoute),
-    );
+    return (MaterialApp(
+        title: "TodoList",
+        theme: Config.themeData,
+        initialRoute: "/",
+        onGenerateRoute: Routes.handleOnGenerateRoute));
   }
 }

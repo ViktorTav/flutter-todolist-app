@@ -14,10 +14,10 @@ class FloatingAddTask extends StatelessWidget {
     return FloatingActionButton(
         tooltip: "Add task",
         onPressed: () => _handleOnPressed(context),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         child: Icon(
           Icons.add,
-          color: Theme.of(context).colorScheme.onSecondary,
+          color: Theme.of(context).colorScheme.onPrimary,
         ));
   }
 }

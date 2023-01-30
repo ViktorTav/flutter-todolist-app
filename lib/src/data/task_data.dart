@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:widget/config.dart';
 import 'package:widget/src/data/todo_list.dart';
 
 import '../types/json.dart';
@@ -10,17 +11,16 @@ import '../types/json.dart';
 const noSuchFileOrDirectoryError = 2;
 
 class TaskData {
-  static Future<String> get _getPath async =>
-      (await getApplicationDocumentsDirectory()).path;
+  static Future<String> get _path async =>
+      "${(await getApplicationDocumentsDirectory()).path}/${Config.savedTasksPath}";
 
   static Future<List<dynamic>> getTasksFromFile() async {
     //Aqui pegamos a localização da pasta do aplicativo em appData.
 
     try {
-      final path = await TaskData._getPath;
+      final path = await _path;
 
-      //TODO: Colocar o diretório em um arquivo de configuração
-      final file = File("$path/tasks.json");
+      final file = File(path);
 
       return jsonDecode(await file.readAsString());
     } on FileSystemException catch (e) {
@@ -41,9 +41,9 @@ class TaskData {
 
   static Future<void> saveTasks({required TodoList list}) async {
     try {
-      final path = await TaskData._getPath;
+      final path = await TaskData._path;
 
-      final file = File("$path/tasks.json");
+      final file = File(path);
 
       await (await file.create(recursive: true)).writeAsString(list.toJson());
     } on Exception {

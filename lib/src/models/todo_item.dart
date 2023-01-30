@@ -3,15 +3,20 @@ import 'package:widget/src/types/json.dart';
 
 class TodoItem {
   String id, title, content;
-  final DateTime createdAtTime;
   bool completed;
+  DateTime? scheduledTime;
+  int? scheduledNotificationId;
+
+  final DateTime createdAtTime;
 
   TodoItem(
       {required this.id,
       required this.title,
       required this.content,
       required this.createdAtTime,
-      required this.completed});
+      required this.completed,
+      this.scheduledNotificationId,
+      this.scheduledTime});
 
   factory TodoItem.createFromJson({required Json json}) {
     return TodoItem(
@@ -26,6 +31,8 @@ class TodoItem {
   factory TodoItem.create(
       {required String title,
       required String content,
+      DateTime? scheduledTime,
+      int? scheduledNotificationId,
       String? id,
       DateTime? createdAtTime,
       bool? completed}) {
@@ -34,7 +41,9 @@ class TodoItem {
         title: title,
         content: content,
         createdAtTime: createdAtTime ?? DateTime.now(),
-        completed: completed ?? false);
+        completed: completed ?? false,
+        scheduledTime: scheduledTime,
+        scheduledNotificationId: scheduledNotificationId);
   }
 
   bool checkChanges(TodoItem editedItem) {

@@ -34,8 +34,10 @@ class TodoItemWidget extends StatelessWidget {
 
   void _handleDeletePopupItemTap(BuildContext context) {
     AppState.of(context).deleteTodo(todoItem: todoItem);
-    ScaffoldMessenger.of(context).showSnackBar(
-        TaskStackBar.createDeleted(todoItem: todoItem, context: context));
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+          TaskStackBar.createDeleted(todoItem: todoItem, context: context));
   }
 
   void _handleEditPopupItemTap(BuildContext context) {

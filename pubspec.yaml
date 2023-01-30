@@ -38,6 +38,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   uuid: ^3.0.7
   path_provider: ^2.0.11
+  flutter_local_notifications: ^13.0.0
+  timezone: ^0.9.1
+  flutter_native_timezone: ^2.0.0
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +64,13 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  fonts:
+    - family: Neucha
+      fonts:
+        - asset: fonts/Neucha-Regular.ttf
+        - style: normal
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:

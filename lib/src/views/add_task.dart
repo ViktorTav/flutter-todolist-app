@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:widget/config.dart';
 import 'package:widget/src/views/widgets/add_task_form.dart';
 
 class AddTaskView extends StatelessWidget {
@@ -13,7 +14,7 @@ class AddTaskView extends StatelessWidget {
       body: const SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+          padding: Config.defaultPageContentPadding,
           child: AddTaskForm(),
         ),
       ),

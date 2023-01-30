@@ -10,8 +10,7 @@ class TaskStackBar {
     return SnackBar(
       content: const Text("Tarefa excluída com sucesso!"),
       action: SnackBarAction(
-        //TODO: Colocar a cor da label no Theme
-        textColor: Colors.white,
+        textColor: Theme.of(context).snackBarTheme.actionTextColor,
         label: "Desfazer",
         onPressed: () => undoLastTaskRemoval(),
       ),
@@ -46,7 +45,6 @@ class TaskStackBar {
     final toggleTaskStatus = AppState.of(context).toggleTaskStatus;
 
     return SnackBar(
-        behavior: SnackBarBehavior.floating,
         content: Text(text),
         action: SnackBarAction(
             label: "Desfazer",

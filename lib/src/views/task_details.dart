@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:widget/config.dart';
 import 'package:widget/src/models/todo_item.dart';
 import 'package:widget/src/util/date.dart';
 import 'package:widget/src/views/widgets/field.dart';
@@ -23,17 +24,33 @@ class TaskDetailsView extends StatelessWidget {
     ];
   }
 
+  Future<void> handleLeadingAppBarIconButtonTap(BuildContext context) async {
+    final navigator = Navigator.of(context);
+
+    if (!(await navigator.maybePop())) {
+      print("alo");
+      navigator.popAndPushNamed("/todo");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => handleLeadingAppBarIconButtonTap(context),
+        ),
         title: const Text("Detalhes da tarefa:"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: _buildFields(),
+      body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: Config.defaultPageContentPadding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _buildFields(),
+          ),
         ),
       ),
     );

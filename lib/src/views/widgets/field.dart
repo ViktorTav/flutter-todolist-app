@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:widget/config.dart';
 
 class FieldLabel extends StatelessWidget {
   final String text;
@@ -14,8 +15,8 @@ class FieldLabel extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 20,
-            color: Theme.of(context).colorScheme.onPrimary,
+            size: 15,
+            color: Colors.black,
           ),
           const SizedBox(
             width: 5.0,
@@ -23,7 +24,7 @@ class FieldLabel extends StatelessWidget {
           Text(
             text,
             style: TextStyle(
-                fontSize: 20, color: Theme.of(context).colorScheme.onPrimary),
+                fontSize: 15, color: Config.fieldTheme["titleColor"]!),
           ),
         ],
       )
@@ -41,9 +42,9 @@ class FieldContent extends StatelessWidget {
     return Text(
       text.toString(),
       style: TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.w100,
-          color: Theme.of(context).colorScheme.onPrimary),
+          fontSize: 25,
+          fontWeight: FontWeight.w200,
+          color: Config.fieldTheme["titleColor"]!),
     );
   }
 }
@@ -64,7 +65,7 @@ class Field extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5.0),
-          color: Theme.of(context).colorScheme.primary),
+          color: Config.fieldTheme["contentColor"]!),
       padding: const EdgeInsets.all(10.0),
       margin: const EdgeInsets.symmetric(vertical: 10.0),
       child: Column(

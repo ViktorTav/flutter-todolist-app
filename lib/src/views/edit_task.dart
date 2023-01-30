@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:widget/config.dart';
 import 'package:widget/src/models/todo_item.dart';
 import 'package:widget/src/views/widgets/edit_task_form.dart';
 
@@ -16,8 +17,7 @@ class EditTaskView extends StatelessWidget {
       body: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
-          //TODO: Colocar o padding padrão da página em um arquivo de configuração
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+          padding: Config.defaultPageContentPadding,
           child: EditTaskForm(todoItem: todoItem),
         ),
       ),
