@@ -7,6 +7,7 @@ import 'package:widget/src/models/local_notification.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:widget/src/models/scheduled_notification.dart';
+import 'package:widget/src/util/date.dart';
 
 abstract class NotificationServiceException implements Exception {
   String get message;
@@ -83,6 +84,8 @@ class NotificationService {
       throw NotificationServiceNotInitialized();
     }
 
+    print(convertToLocalDate(notification.date));
+
     _localNotification.zonedSchedule(
         notification.id,
         notification.title,
@@ -90,6 +93,7 @@ class NotificationService {
         tz.TZDateTime.fromMicrosecondsSinceEpoch(
             tz.local, notification.date.microsecondsSinceEpoch),
         _notificationDetails,
+        payload: notification.payload,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         androidAllowWhileIdle: false);

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:widget/src/models/local_notification.dart';
+import 'package:widget/src/models/scheduled_notification.dart';
 import 'package:widget/src/models/todo_item.dart';
 import 'package:widget/src/provider/app.dart';
 import 'package:widget/src/services/notification.dart';
 import 'package:widget/src/views/widgets/form/date_picker.dart';
+import 'package:widget/src/views/widgets/form/dropdown.dart';
 import 'package:widget/src/views/widgets/form/input.dart';
 import 'package:widget/src/views/widgets/form/text_area.dart';
 
@@ -21,19 +22,40 @@ class _AddTaskFormState extends State<AddTaskForm> {
   final _contentInputController = TextEditingController();
   final _datePickerInputController = TextEditingController();
 
+  final _notificationTimeDropdownKey = GlobalKey<FormDropdownState>();
+
+  DateTime? _taskDate, _scheduledNotificationTime;
+
   void _handleSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) return;
 
-    final TodoItem todoItem = AppState.of(context).addTodo(
+    final TodoItem todoItem = TodoItem.create(
         title: _titleInputController.text,
-        content: _contentInputController.text);
+        content: _contentInputController.text,
+        taskDate: _taskDate!,
+        scheduledNotificationTime: _scheduledNotificationTime);
 
-    NotificationService.displayNotification(LocalNotification(
-        content: todoItem.content,
-        title: todoItem.title,
-        payload: todoItem.id));
+    if (todoItem.scheduledNotificationTime != null) {
+      final scheduledNotification = ScheduledNotification(
+          title: "Entrega de tarefa",
+          content: todoItem.title,
+          payload: todoItem.id,
+          date: todoItem.scheduledNotificationTime!);
+
+      todoItem.scheduledNotificationId = scheduledNotification.id;
+
+      NotificationService.scheduleNotification(scheduledNotification);
+    }
+
+    AppState.of(context).addTodo(todoItem: todoItem);
 
     Navigator.pop(context);
+  }
+
+  void handleDateChange(DateTime? value) {
+    setState(() {
+      _taskDate = value;
+    });
   }
 
   @override
@@ -41,7 +63,7 @@ class _AddTaskFormState extends State<AddTaskForm> {
     final inputControllers = <TextEditingController>[
       _titleInputController,
       _contentInputController,
-      _datePickerInputController
+      _datePickerInputController,
     ];
 
     for (var controller in inputControllers) {
@@ -51,9 +73,57 @@ class _AddTaskFormState extends State<AddTaskForm> {
     super.dispose();
   }
 
+  List<DropdownMenuItem<Duration>> _buildNotificationTimesDropdownMenuItems() {
+    const dropdownItems = <List<dynamic>>[
+      ["Sem notificação", Duration(minutes: 0)],
+      ["5 minutos", Duration(minutes: 5)],
+      ["30 minutos", Duration(minutes: 30)],
+      ["1 hora", Duration(hours: 1)],
+      ["2 horas", Duration(hours: 2)],
+      ["12 horas", Duration(hours: 12)],
+      ["Dia anterior", Duration(days: 1)]
+    ];
+
+    final list = <DropdownMenuItem<Duration>>[];
+
+    for (var dropdownItem in dropdownItems) {
+      list.add(DropdownMenuItem(
+          value: dropdownItem[1], child: Text(dropdownItem[0])));
+    }
+
+    return list;
+  }
+
+  String? _validateNotificationTime(Duration? value) {
+    if (_taskDate == null) return null;
+
+    final Duration notificationTime = value!;
+
+    if (notificationTime.inMinutes == 0) {
+      _scheduledNotificationTime = null;
+      return null;
+    }
+
+    final DateTime scheduledNotificationTime =
+        _taskDate!.subtract(notificationTime);
+
+    /*
+      Verificamos se o horário da notificação agendanda não é anterior que o horário atual.  
+    */
+
+    if (scheduledNotificationTime.isBefore(DateTime.now())) {
+      return "Não é possível criar uma notificação para uma data menor do que a atual. Escolha outro horário para a notificação.";
+    }
+
+    _scheduledNotificationTime = scheduledNotificationTime;
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       key: _formKey,
       child: Column(
         children: [
@@ -71,8 +141,19 @@ class _AddTaskFormState extends State<AddTaskForm> {
           ),
           FormDatePicker(
             controller: _datePickerInputController,
-            fieldName: "Data",
-            labelText: "Data:",
+            fieldName: "Data de entrega",
+            labelText: "Data de entrega:",
+            onChanged: handleDateChange,
+          ),
+          FormDropdown<Duration>(
+              enabled: _taskDate != null,
+              key: _notificationTimeDropdownKey,
+              validator: _validateNotificationTime,
+              labelText: "Notificação:",
+              items: _buildNotificationTimesDropdownMenuItems(),
+              initialValueIndex: 0),
+          const SizedBox(
+            height: 30,
           ),
           ElevatedButton(
               style: ElevatedButton.styleFrom(

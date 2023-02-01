@@ -46,7 +46,9 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
 
     NotificationService.initialize().then((value) {
       NotificationService.getNotificationAppLaunchDetails().then((value) {
-        notificationAppLaunchDetails = value;
+        setState(() {
+          notificationAppLaunchDetails = value;
+        });
       });
     });
 
@@ -80,14 +82,10 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
     });
   }
 
-  TodoItem addTodo({required String title, required String content}) {
-    final todoItem = TodoItem.create(title: title, content: content);
-
+  void addTodo({required TodoItem todoItem}) {
     setState(() {
       list.addItem(todoItem: todoItem);
     });
-
-    return todoItem;
   }
 
   void editTodo(
@@ -143,8 +141,7 @@ class AppState extends InheritedWidget {
   final TodoList list;
   final void Function({required TodoItem todoItem}) toggleTaskStatus,
       deleteTodo;
-  final TodoItem Function({required String title, required String content})
-      addTodo;
+  final void Function({required TodoItem todoItem}) addTodo;
   final void Function(
       {required TodoItem originalItem, required TodoItem editedItem}) editTodo;
 

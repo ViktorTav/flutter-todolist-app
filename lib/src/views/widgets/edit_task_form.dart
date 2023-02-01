@@ -29,7 +29,9 @@ class _EditTaskFormState extends State<EditTaskForm> {
   void _handleSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) return;
 
+    //TODO: Colocar a opção de alterar a data de entrega na edição
     final editedTask = TodoItem.create(
+        taskDate: DateTime.now(),
         title: _titleInputController.text,
         content: _contentInputController.text);
 

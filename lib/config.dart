@@ -10,6 +10,7 @@ class Config {
       colorScheme: colorScheme,
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white),
       inputDecorationTheme: InputDecorationTheme(
+          errorMaxLines: 5,
           filled: true,
           fillColor: Colors.grey[200],
           enabledBorder: UnderlineInputBorder(

@@ -15,6 +15,8 @@ class AppRouter extends StatelessWidget {
 
     bool? tasksObtained = AppState.of(context).tasksObtained;
 
+    print("$notificationAppLaunchDetails $tasksObtained");
+
     if (notificationAppLaunchDetails == null || tasksObtained == null) {
       return routes["/loading"]!;
     } else if (notificationAppLaunchDetails.didNotificationLaunchApp == false) {
@@ -26,6 +28,8 @@ class AppRouter extends StatelessWidget {
 
     final TodoItem? todoItem =
         AppState.of(context).list.getItem(id: todoItemId);
+
+    print(todoItemId);
 
     if (todoItem == null) {
       debugPrint("No existe um todo no");

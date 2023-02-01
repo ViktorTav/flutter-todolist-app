@@ -1,4 +1,3 @@
-import 'package:timezone/browser.dart';
 import 'package:widget/src/models/local_notification.dart';
 
 class ScheduledNotification extends LocalNotification {

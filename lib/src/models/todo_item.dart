@@ -4,10 +4,10 @@ import 'package:widget/src/types/json.dart';
 class TodoItem {
   String id, title, content;
   bool completed;
-  DateTime? scheduledTime;
+  DateTime? scheduledNotificationTime;
   int? scheduledNotificationId;
 
-  final DateTime createdAtTime;
+  final DateTime createdAtTime, taskDate;
 
   TodoItem(
       {required this.id,
@@ -15,8 +15,9 @@ class TodoItem {
       required this.content,
       required this.createdAtTime,
       required this.completed,
+      required this.taskDate,
       this.scheduledNotificationId,
-      this.scheduledTime});
+      this.scheduledNotificationTime});
 
   factory TodoItem.createFromJson({required Json json}) {
     return TodoItem(
@@ -25,13 +26,20 @@ class TodoItem {
         content: json["content"],
         createdAtTime:
             DateTime.fromMillisecondsSinceEpoch(json["createdAtTime"]),
-        completed: json["completed"]);
+        completed: json["completed"],
+        scheduledNotificationTime: json["scheduledNotificationTime"] != null
+            ? DateTime.fromMillisecondsSinceEpoch(
+                json["scheduledNotificationTime"])
+            : null,
+        scheduledNotificationId: json["scheduledNotificationId"],
+        taskDate: DateTime.fromMillisecondsSinceEpoch(json["taskDate"]));
   }
 
   factory TodoItem.create(
       {required String title,
       required String content,
-      DateTime? scheduledTime,
+      required DateTime taskDate,
+      DateTime? scheduledNotificationTime,
       int? scheduledNotificationId,
       String? id,
       DateTime? createdAtTime,
@@ -42,8 +50,9 @@ class TodoItem {
         content: content,
         createdAtTime: createdAtTime ?? DateTime.now(),
         completed: completed ?? false,
-        scheduledTime: scheduledTime,
-        scheduledNotificationId: scheduledNotificationId);
+        scheduledNotificationTime: scheduledNotificationTime,
+        scheduledNotificationId: scheduledNotificationId,
+        taskDate: taskDate);
   }
 
   bool checkChanges(TodoItem editedItem) {
@@ -56,7 +65,11 @@ class TodoItem {
       "title": title,
       "content": content,
       "createdAtTime": createdAtTime.millisecondsSinceEpoch,
-      "completed": completed
+      "completed": completed,
+      "scheduledNotificationTime":
+          scheduledNotificationTime?.millisecondsSinceEpoch,
+      "taskDate": taskDate.millisecondsSinceEpoch,
+      "scheduledNotificationId": scheduledNotificationId,
     };
   }
 
