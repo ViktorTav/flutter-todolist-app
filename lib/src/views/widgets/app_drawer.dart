@@ -15,15 +15,16 @@ class AppDrawer extends StatelessWidget {
   }
 
   void _changeRoute(BuildContext context, String routeName) {
-    Navigator.pop(context);
+    final navigator = Navigator.of(context);
+
     /*
       Para uma transição mais suave entre as mudanças de rotas, esperamos a animação de saída 
       do drawer acabar para mudar a rota.
     */
+    navigator.pop(context);
 
     Future.delayed(const Duration(milliseconds: 200)).then((_) {
-      Navigator.pop(context);
-      Navigator.pushNamed(context, routeName);
+      navigator.popAndPushNamed(routeName);
     });
   }
 

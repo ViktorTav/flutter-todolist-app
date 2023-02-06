@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:widget/src/models/local_notification.dart';
+import 'package:widget/src/models/notification_action.dart';
 
 class Config {
   static final colorScheme = ColorScheme.fromSeed(seedColor: Colors.lightBlue);
@@ -32,12 +34,27 @@ class Config {
     "contentColor": Colors.grey[200]
   };
 
-  static const notification = {
+  static final notification = {
     "channel": {
       "id": "0",
       "name": "Padrão",
       "description": "Notificações padrão do aplicativo",
     },
-    "icon": {"drawableResource": "app_icon", "color": Colors.white},
+    "icon": {
+      "drawableResource": "notification_icon",
+      "color": colorScheme.primary
+    },
+    "task": {
+      "actions": [
+        NotificationAction(
+            id: ActionId.finishTask,
+            title: "Concluir",
+            showsUserInterface: true),
+        NotificationAction(
+            id: ActionId.taskDetails,
+            title: "Detalhes",
+            showsUserInterface: true)
+      ]
+    }
   };
 }

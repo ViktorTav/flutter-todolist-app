@@ -33,6 +33,10 @@ class TodoList {
     _unfinishedList.add(todoItem);
   }
 
+  void removeAllUnfinishedTasks() {
+    _unfinishedList.removeRange(0, _unfinishedList.length);
+  }
+
   void toggleItemStatus({required TodoItem todoItem}) {
     if (todoItem.completed) {
       _finishedList.remove(todoItem);

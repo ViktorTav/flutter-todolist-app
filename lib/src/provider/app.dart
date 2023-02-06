@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:widget/src/data/task_data.dart';
 import 'package:widget/src/data/todo_list.dart';
 import 'package:widget/src/models/todo_item.dart';
 import 'package:widget/src/services/notification.dart';
+import 'package:widget/src/routes/routes.dart';
+import 'package:widget/src/routes/router.dart';
 
 class AppProvider extends StatefulWidget {
   final Widget child;
@@ -44,7 +47,10 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
       debugPrint("$s");
     }
 
-    NotificationService.initialize().then((value) {
+    NotificationService.initialize(
+            didReceiveNotificationResponse:
+                _handleDidReceiveNotificationResponse)
+        .then((value) {
       NotificationService.getNotificationAppLaunchDetails().then((value) {
         setState(() {
           notificationAppLaunchDetails = value;
@@ -64,31 +70,31 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  void undoLastTaskRemoval() {
+  void _undoLastTaskRemoval() {
     setState(() {
       list.undoLastItemRemoval();
     });
   }
 
-  void toggleTaskStatus({required TodoItem todoItem}) {
+  void _toggleTaskStatus({required TodoItem todoItem}) {
     setState(() {
       list.toggleItemStatus(todoItem: todoItem);
     });
   }
 
-  void deleteTodo({required TodoItem todoItem}) {
+  void _deleteTodo({required TodoItem todoItem}) {
     setState(() {
       list.removeItem(todoItem: todoItem);
     });
   }
 
-  void addTodo({required TodoItem todoItem}) {
+  void _addTodo({required TodoItem todoItem}) {
     setState(() {
       list.addItem(todoItem: todoItem);
     });
   }
 
-  void editTodo(
+  void _editTodo(
       {required TodoItem originalItem, required TodoItem editedItem}) {
     if (!originalItem.checkChanges(editedItem)) return;
 
@@ -99,13 +105,29 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> saveTasks() async {
+  void _removeAllUnfinishedTasks() {
+    //TODO: Colocar um snackbar para recuperar as tarefas excluídas.
+
+    setState(() {
+      list.removeAllUnfinishedTasks();
+    });
+  }
+
+  Future<void> _saveTasks() async {
     try {
       await TaskData.saveTasks(list: list);
     } catch (e, s) {
       debugPrint("[AppState] Failed to saveTasks. $e");
       debugPrint("$s");
     }
+  }
+
+  void _handleDidReceiveNotificationResponse(
+      NotificationResponse notificationResponse) {
+    Routes.changeRoute(
+        context,
+        CustomRouter.getRouteFromNotificationResponse(
+            context: context, notificationResponse: notificationResponse));
   }
 
   @override
@@ -117,7 +139,7 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
     */
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
-      await saveTasks();
+      await _saveTasks();
     }
   }
 
@@ -125,14 +147,15 @@ class AppProviderState extends State<AppProvider> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return AppState(
         list: list,
-        toggleTaskStatus: toggleTaskStatus,
-        deleteTodo: deleteTodo,
-        addTodo: addTodo,
-        saveTasks: saveTasks,
-        editTodo: editTodo,
-        undoLastTaskRemoval: undoLastTaskRemoval,
+        toggleTaskStatus: _toggleTaskStatus,
+        deleteTodo: _deleteTodo,
+        addTodo: _addTodo,
+        saveTasks: _saveTasks,
+        editTodo: _editTodo,
+        undoLastTaskRemoval: _undoLastTaskRemoval,
         notificationAppLaunchDetails: notificationAppLaunchDetails,
         tasksObtained: tasksObtained,
+        removeAllUnfinishedTasks: _removeAllUnfinishedTasks,
         child: widget.child);
   }
 }
@@ -145,7 +168,7 @@ class AppState extends InheritedWidget {
   final void Function(
       {required TodoItem originalItem, required TodoItem editedItem}) editTodo;
 
-  final void Function() undoLastTaskRemoval;
+  final void Function() undoLastTaskRemoval, removeAllUnfinishedTasks;
   final Future<void> Function() saveTasks;
   final NotificationAppLaunchDetails? notificationAppLaunchDetails;
   final bool? tasksObtained;
@@ -161,7 +184,8 @@ class AppState extends InheritedWidget {
       required this.editTodo,
       required this.undoLastTaskRemoval,
       required this.notificationAppLaunchDetails,
-      required this.tasksObtained});
+      required this.tasksObtained,
+      required this.removeAllUnfinishedTasks});
 
   @override
   bool updateShouldNotify(covariant AppState oldWidget) {

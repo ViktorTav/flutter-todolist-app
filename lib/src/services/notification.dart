@@ -13,6 +13,7 @@ abstract class NotificationServiceException implements Exception {
   String get message;
 }
 
+//TODO: trocar isso por um assertion
 class NotificationServiceNotInitialized
     implements NotificationServiceException {
   @override
@@ -22,11 +23,17 @@ class NotificationServiceNotInitialized
 
 class NotificationService {
   static final _localNotification = FlutterLocalNotificationsPlugin();
-  static late final NotificationDetails _notificationDetails;
+  static late final NotificationDetails _defaultNotificationDetails;
+  static late final Function(NotificationResponse)
+      _didReceiveNotificationResponse;
   static bool _initialized = false;
 
-  static Future<void> initialize() async {
+  static Future<void> initialize(
+      {required Function(NotificationResponse notificationResponse)
+          didReceiveNotificationResponse}) async {
     //Inicialização do plugin de notificações
+
+    _didReceiveNotificationResponse = didReceiveNotificationResponse;
 
     final initializationSettingsAndroid = AndroidInitializationSettings(
         Config.notification["icon"]!["drawableResource"] as String);
@@ -35,7 +42,8 @@ class NotificationService {
         InitializationSettings(android: initializationSettingsAndroid);
 
     await _localNotification.initialize(initializationSettings,
-        onDidReceiveNotificationResponse:
+        onDidReceiveNotificationResponse: _handleDidReceiveNotificationResponse,
+        onDidReceiveBackgroundNotificationResponse:
             _handleDidReceiveNotificationResponse);
 
     final androidNotificationDetails = AndroidNotificationDetails(
@@ -48,7 +56,7 @@ class NotificationService {
       color: Config.notification["icon"]!["color"] as Color,
     );
 
-    _notificationDetails =
+    _defaultNotificationDetails =
         NotificationDetails(android: androidNotificationDetails);
 
     //Inicialização do timezone para notificações agendendas
@@ -69,22 +77,32 @@ class NotificationService {
 
   static Future<void> displayNotification(
       LocalNotification notification) async {
-    if (!_initialized) {
-      throw NotificationServiceNotInitialized();
-    }
+    assert(_initialized);
 
     await _localNotification.show(notification.id, notification.title,
-        notification.content, _notificationDetails,
+        notification.content, _defaultNotificationDetails,
         payload: notification.payload);
   }
 
   static Future<void> scheduleNotification(
       ScheduledNotification notification) async {
-    if (!_initialized) {
-      throw NotificationServiceNotInitialized();
-    }
+    assert(_initialized);
 
-    print(convertToLocalDate(notification.date));
+    final defaultAndroidNotificationDetails =
+        _defaultNotificationDetails.android!;
+
+    final androidNotificationDetails = AndroidNotificationDetails(
+        defaultAndroidNotificationDetails.channelId,
+        defaultAndroidNotificationDetails.channelName,
+        channelDescription:
+            defaultAndroidNotificationDetails.channelDescription,
+        importance: defaultAndroidNotificationDetails.importance,
+        priority: defaultAndroidNotificationDetails.priority,
+        color: defaultAndroidNotificationDetails.color,
+        actions: notification.actions);
+
+    final notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
 
     _localNotification.zonedSchedule(
         notification.id,
@@ -92,7 +110,7 @@ class NotificationService {
         notification.content,
         tz.TZDateTime.fromMicrosecondsSinceEpoch(
             tz.local, notification.date.microsecondsSinceEpoch),
-        _notificationDetails,
+        notificationDetails,
         payload: notification.payload,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
@@ -100,15 +118,17 @@ class NotificationService {
   }
 
   //TODO: cancelScheduledNotification
-  static Future<void> cancelScheduledNotification(int id) async {}
+  static Future<void> cancelScheduledNotification(int id) async {
+    assert(_initialized);
+  }
 
   //TODO: editScheduledNotification
-  static Future<void> editScheduledNotification(int id) async {}
+  static Future<void> editScheduledNotification(int id) async {
+    assert(_initialized);
+  }
 
   static void _handleDidReceiveNotificationResponse(
       NotificationResponse notificationResponse) {
-    if (notificationResponse.payload != null) {
-      debugPrint("${notificationResponse.payload}");
-    }
+    _didReceiveNotificationResponse(notificationResponse);
   }
 }

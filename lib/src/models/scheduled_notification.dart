@@ -7,5 +7,6 @@ class ScheduledNotification extends LocalNotification {
       {required super.title,
       required super.content,
       required super.payload,
+      super.actions,
       required this.date});
 }

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:widget/src/animations/page_transition.dart';
-import 'package:widget/src/provider/app.dart';
-import 'package:widget/src/routes/router.dart';
 import 'package:widget/src/views/finished_tasks.dart';
 import 'package:widget/src/views/loading.dart';
 import 'package:widget/src/views/todo_tasks.dart';
 
 final routes = {
-  "/": const AppRouter(),
+  "/": const TodoTasksView(),
   "/todo": const TodoTasksView(),
   "/finished": const FinishedTasksView(),
   "/loading": const LoadingView()

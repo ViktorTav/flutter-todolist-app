@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:widget/config.dart';
+import 'package:widget/src/models/notification_action.dart';
 import 'package:widget/src/models/scheduled_notification.dart';
 import 'package:widget/src/models/todo_item.dart';
 import 'package:widget/src/provider/app.dart';
@@ -33,14 +35,17 @@ class _AddTaskFormState extends State<AddTaskForm> {
         title: _titleInputController.text,
         content: _contentInputController.text,
         taskDate: _taskDate!,
-        scheduledNotificationTime: _scheduledNotificationTime);
+        scheduledNotificationTime:
+            DateTime.now().add(const Duration(seconds: 5)));
 
     if (todoItem.scheduledNotificationTime != null) {
       final scheduledNotification = ScheduledNotification(
           title: "Entrega de tarefa",
           content: todoItem.title,
           payload: todoItem.id,
-          date: todoItem.scheduledNotificationTime!);
+          date: todoItem.scheduledNotificationTime!,
+          actions: Config.notification["task"]!["actions"]
+              as List<NotificationAction>);
 
       todoItem.scheduledNotificationId = scheduledNotification.id;
 

@@ -7,6 +7,10 @@ import 'package:widget/src/views/widgets/floating_add_task.dart';
 class TodoTasksView extends StatelessWidget {
   const TodoTasksView({super.key});
 
+  void _handleDeleteAllItemTap(BuildContext context) {
+    AppState.of(context).removeAllUnfinishedTasks();
+  }
+
   @override
   Widget build(BuildContext context) {
     final list = AppState.of(context).list.getUnFinishedList();
@@ -17,7 +21,16 @@ class TodoTasksView extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: list.isEmpty,
       appBar: AppBar(
-        title: const Text("A fazer:"),
+        title: const Text("A fazer"),
+        actions: [
+          PopupMenuButton(
+              itemBuilder: (context) => <PopupMenuItem>[
+                    PopupMenuItem(
+                      onTap: () => _handleDeleteAllItemTap(context),
+                      child: const Text("Excluir todos"),
+                    )
+                  ])
+        ],
       ),
       body: body,
       drawer: const AppDrawer(selectedItem: 0),
