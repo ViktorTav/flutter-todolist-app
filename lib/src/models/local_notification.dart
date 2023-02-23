@@ -1,12 +1,11 @@
 import 'package:widget/src/models/notification_action.dart';
 
-enum ActionId { taskDetails, finishTask }
-
 class LocalNotification {
   static int _ids = 0;
 
   final int id = _ids++;
-  final String title, content, payload;
+  final String title, content;
+  final Map<String, String> payload;
   final List<NotificationAction>? actions;
 
   LocalNotification(

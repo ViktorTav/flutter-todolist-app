@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:widget/src/provider/app.dart';
+import 'package:provider/provider.dart';
+import 'package:widget/src/models/todo_item.dart';
+import 'package:widget/src/models/todo_list.dart';
 import 'package:widget/src/views/widgets/app_drawer.dart';
+import 'package:widget/src/views/widgets/snackbars/task.dart';
 import 'package:widget/src/views/widgets/todo_list_container.dart';
 import 'package:widget/src/views/widgets/floating_add_task.dart';
 
@@ -8,12 +11,32 @@ class TodoTasksView extends StatelessWidget {
   const TodoTasksView({super.key});
 
   void _handleDeleteAllItemTap(BuildContext context) {
-    AppState.of(context).removeAllUnfinishedTasks();
+    final todoList = Provider.of<TodoList>(context, listen: false);
+    final Function removeLastDeletedList = todoList.removeLastDeletedList;
+
+    todoList.removeAllUnfinishedTasks();
+
+    /*
+      Mostramos uma snackbar para caso o usuário deseje restaurar a lista excluída. 
+    */
+    ScaffoldMessenger.of(context)
+        .showSnackBar(TaskSnackBar.createDeletedAll(context))
+        .closed
+        .then((SnackBarClosedReason reason) {
+      /* 
+        Removemos definitivamente a lista caso o usuário não restaurou a lista através da
+        action da snackbar.
+      */
+      if (reason == SnackBarClosedReason.action) return;
+      removeLastDeletedList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final list = AppState.of(context).list.getUnFinishedList();
+    final todoList = context.watch<TodoList>();
+
+    final List<TodoItem> list = todoList.unfinishedList;
 
     final body =
         list.isEmpty ? const _NoTasks() : TodoListContainer(list: list);

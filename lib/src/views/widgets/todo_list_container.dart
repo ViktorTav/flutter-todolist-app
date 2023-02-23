@@ -14,7 +14,10 @@ class TodoListContainer extends StatelessWidget {
       padding: Config.defaultPageContentPadding,
       child: ListView.builder(
         itemCount: list.length,
-        itemBuilder: (context, index) => TodoItemWidget(todoItem: list[index]),
+        itemBuilder: (context, index) => TodoItemWidget(
+          todoItem: list[index],
+          index: index,
+        ),
       ),
     );
   }

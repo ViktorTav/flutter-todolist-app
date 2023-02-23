@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:widget/src/models/todo_item.dart';
-import 'package:widget/src/provider/app.dart';
+import 'package:widget/src/models/todo_list.dart';
 import 'package:widget/src/views/widgets/form/input.dart';
 
 class EditTaskForm extends StatefulWidget {
@@ -35,7 +36,7 @@ class _EditTaskFormState extends State<EditTaskForm> {
         title: _titleInputController.text,
         content: _contentInputController.text);
 
-    AppState.of(context)
+    Provider.of<TodoList>(context, listen: false)
         .editTodo(originalItem: widget.todoItem, editedItem: editedTask);
 
     Navigator.pop(context);

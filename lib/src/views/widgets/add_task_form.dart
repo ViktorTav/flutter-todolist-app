@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:widget/config.dart';
 import 'package:widget/src/models/notification_action.dart';
 import 'package:widget/src/models/scheduled_notification.dart';
 import 'package:widget/src/models/todo_item.dart';
-import 'package:widget/src/provider/app.dart';
+import 'package:widget/src/models/todo_list.dart';
 import 'package:widget/src/services/notification.dart';
 import 'package:widget/src/views/widgets/form/date_picker.dart';
 import 'package:widget/src/views/widgets/form/dropdown.dart';
@@ -29,6 +30,9 @@ class _AddTaskFormState extends State<AddTaskForm> {
   DateTime? _taskDate, _scheduledNotificationTime;
 
   void _handleSubmit(BuildContext context) {
+    final notificationService =
+        Provider.of<NotificationService>(context, listen: false);
+
     if (!_formKey.currentState!.validate()) return;
 
     final TodoItem todoItem = TodoItem.create(
@@ -42,17 +46,17 @@ class _AddTaskFormState extends State<AddTaskForm> {
       final scheduledNotification = ScheduledNotification(
           title: "Entrega de tarefa",
           content: todoItem.title,
-          payload: todoItem.id,
+          payload: {"taskId": todoItem.id},
           date: todoItem.scheduledNotificationTime!,
           actions: Config.notification["task"]!["actions"]
               as List<NotificationAction>);
 
       todoItem.scheduledNotificationId = scheduledNotification.id;
 
-      NotificationService.scheduleNotification(scheduledNotification);
+      notificationService.scheduleNotification(scheduledNotification);
     }
 
-    AppState.of(context).addTodo(todoItem: todoItem);
+    Provider.of<TodoList>(context, listen: false).addItem(todoItem: todoItem);
 
     Navigator.pop(context);
   }

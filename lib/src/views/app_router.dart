@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:widget/src/provider/app.dart';
+import 'package:provider/provider.dart';
+import 'package:widget/src/provider/state.dart';
 import 'package:widget/src/routes/router.dart';
 import 'package:widget/src/routes/routes.dart';
 
@@ -9,20 +9,16 @@ class AppRouter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NotificationAppLaunchDetails? notificationAppLaunchDetails =
-        AppState.of(context).notificationAppLaunchDetails;
+    final appState = context.watch<AppState>();
 
-    bool? tasksObtained = AppState.of(context).tasksObtained;
-
-    if (notificationAppLaunchDetails == null || tasksObtained == null) {
-      return routes["/loading"]!;
-    } else if (notificationAppLaunchDetails.didNotificationLaunchApp == false) {
-      return routes["/todo"]!;
+    if (appState.appLaunchedByNotification == null ||
+        appState.tasksObtained == null) {
+      return routes["/loading"]!();
+    } else if (appState.appLaunchedByNotification == false) {
+      return routes["/todo"]!();
     }
 
-    return CustomRouter.getRouteFromNotificationResponse(
-        context: context,
-        notificationResponse:
-            notificationAppLaunchDetails.notificationResponse!);
+    return CustomRouter.getRouteFromNotification(
+        receivedAction: appState.initialNotificationAction);
   }
 }

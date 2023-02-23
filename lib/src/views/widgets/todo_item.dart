@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:widget/src/models/todo_item.dart';
-import 'package:widget/src/provider/app.dart';
+import 'package:widget/src/models/todo_list.dart';
 import 'package:widget/src/views/edit_task.dart';
 import 'package:widget/src/views/task_details.dart';
 import 'package:widget/src/views/widgets/snackbars/task.dart';
 
 class TodoItemWidget extends StatelessWidget {
   final TodoItem todoItem;
+  final int index;
 
-  const TodoItemWidget({super.key, required this.todoItem});
+  const TodoItemWidget(
+      {super.key, required this.todoItem, required this.index});
 
   void _handleOnTap(BuildContext context) {
     Navigator.push(
@@ -21,23 +24,27 @@ class TodoItemWidget extends StatelessWidget {
     final SnackBar snackBar;
 
     if (todoItem.completed) {
-      snackBar = TaskStackBar.createTodo(todoItem: todoItem, context: context);
+      snackBar = TaskSnackBar.createTodo(todoItem: todoItem, context: context);
     } else {
       snackBar =
-          TaskStackBar.createFinished(todoItem: todoItem, context: context);
+          TaskSnackBar.createFinished(todoItem: todoItem, context: context);
     }
-    AppState.of(context).toggleTaskStatus(todoItem: todoItem);
+
+    Provider.of<TodoList>(context, listen: false)
+        .toggleItemStatus(todoItem: todoItem);
+
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(snackBar);
   }
 
   void _handleDeletePopupItemTap(BuildContext context) {
-    AppState.of(context).deleteTodo(todoItem: todoItem);
+    Provider.of<TodoList>(context, listen: false)
+        .removeItem(todoItem: todoItem, index: index);
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(
-          TaskStackBar.createDeleted(todoItem: todoItem, context: context));
+          TaskSnackBar.createDeleted(todoItem: todoItem, context: context));
   }
 
   void _handleEditPopupItemTap(BuildContext context) {

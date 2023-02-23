@@ -1,26 +1,20 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:widget/src/models/local_notification.dart';
+import 'dart:ffi';
 
-//ignore_for_file: unused_element
+import 'package:awesome_notifications/awesome_notifications.dart';
 
-class NotificationAction extends AndroidNotificationAction {
-  NotificationAction._(
-    super.id,
-    super.title, {
-    super.titleColor,
+enum ActionKey { taskDetails, finishTask }
+
+class NotificationAction extends NotificationActionButton {
+  NotificationAction({
+    required ActionKey key,
+    required String title,
     super.icon,
-    super.contextual = false,
-    super.showsUserInterface = false,
-    super.allowGeneratedReplies = false,
-    super.inputs = const <AndroidNotificationActionInput>[],
-    super.cancelNotification = true,
-  });
-
-  factory NotificationAction(
-      {required ActionId id,
-      required String title,
-      required bool showsUserInterface}) {
-    return NotificationAction._(id.toString(), title,
-        showsUserInterface: showsUserInterface);
-  }
+    super.enabled,
+    super.requireInputText,
+    super.autoDismissible,
+    super.showInCompactView,
+    super.isDangerousOption,
+    super.color,
+    super.actionType,
+  }) : super(key: key.index.toString(), label: title);
 }

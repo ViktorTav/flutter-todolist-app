@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:widget/config.dart';
-import 'package:widget/src/data/todo_list.dart';
+import 'package:widget/src/models/todo_list.dart';
 
 import '../types/json.dart';
 

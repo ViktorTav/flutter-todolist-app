@@ -1,16 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:widget/src/provider/app.dart';
+import 'package:provider/provider.dart';
+import 'package:widget/src/models/todo_item.dart';
+import 'package:widget/src/models/todo_list.dart';
 import 'package:widget/src/routes/routes.dart';
 import 'package:widget/src/views/todo_tasks.dart';
 import 'package:widget/src/views/widgets/app_drawer.dart';
+import 'package:widget/src/views/widgets/snackbars/task.dart';
 import 'package:widget/src/views/widgets/todo_list_container.dart';
 
 class FinishedTasksView extends StatelessWidget {
   const FinishedTasksView({super.key});
 
+  void _handleDeleteAllItemTap(BuildContext context) {
+    final todoList = Provider.of<TodoList>(context, listen: false);
+    final Function removeLastDeletedList = todoList.removeLastDeletedList;
+
+    todoList.removeAllFinishedTasks();
+
+    /*
+      Mostramos uma snackbar para caso o usuário deseje restaurar a lista excluída. 
+    */
+    ScaffoldMessenger.of(context)
+        .showSnackBar(TaskSnackBar.createDeletedAll(context))
+        .closed
+        .then((SnackBarClosedReason reason) {
+      /* 
+        Removemos definitivamente a lista caso o usuário não restaurou a lista através da
+        action da snackbar.
+      */
+      if (reason == SnackBarClosedReason.action) return;
+      removeLastDeletedList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final list = AppState.of(context).list.getFinishedList();
+    final todoList = context.watch<TodoList>();
+
+    final List<TodoItem> list = todoList.finishedList;
 
     final body =
         list.isEmpty ? const _NoFinishedTasks() : TodoListContainer(list: list);
@@ -19,6 +46,15 @@ class FinishedTasksView extends StatelessWidget {
       extendBodyBehindAppBar: list.isEmpty,
       appBar: AppBar(
         title: const Text("Finalizadas:"),
+        actions: [
+          PopupMenuButton(
+              itemBuilder: (context) => <PopupMenuItem>[
+                    PopupMenuItem(
+                      onTap: () => _handleDeleteAllItemTap(context),
+                      child: const Text("Excluir todos"),
+                    )
+                  ])
+        ],
       ),
       body: body,
       drawer: const AppDrawer(selectedItem: 1),

@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:widget/src/models/todo_item.dart';
-import 'package:widget/src/provider/app.dart';
+import 'package:widget/src/models/todo_list.dart';
 
-class TaskStackBar {
+abstract class TaskSnackBar {
+  static SnackBar createDeletedAll(BuildContext context) {
+    final undoLastListRemoval =
+        Provider.of<TodoList>(context, listen: false).undoLastListRemoval;
+
+    return SnackBar(
+      content: const Text("Todas as tarefas excluídas com sucesso!"),
+      action: SnackBarAction(
+        textColor: Theme.of(context).snackBarTheme.actionTextColor,
+        label: "Desfazer",
+        onPressed: undoLastListRemoval,
+      ),
+    );
+  }
+
   static SnackBar createDeleted(
       {required TodoItem todoItem, required BuildContext context}) {
-    final undoLastTaskRemoval = AppState.of(context).undoLastTaskRemoval;
+    final undoLastItemRemoval =
+        Provider.of<TodoList>(context, listen: false).undoLastItemRemoval;
 
     return SnackBar(
       content: const Text("Tarefa excluída com sucesso!"),
       action: SnackBarAction(
         textColor: Theme.of(context).snackBarTheme.actionTextColor,
         label: "Desfazer",
-        onPressed: () => undoLastTaskRemoval(),
+        onPressed: undoLastItemRemoval,
       ),
     );
   }
@@ -42,7 +58,8 @@ class TaskStackBar {
       após a tarefa ser mudada de lista, provavelmente o contexto do ListTile que usamos aqui não é mais 
       válido, não sendo mais possível acessar o AppState. 
     */
-    final toggleTaskStatus = AppState.of(context).toggleTaskStatus;
+    final toggleTaskStatus =
+        Provider.of<TodoList>(context, listen: false).toggleItemStatus;
 
     return SnackBar(
         content: Text(text),

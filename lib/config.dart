@@ -37,6 +37,7 @@ class Config {
   static final notification = {
     "channel": {
       "id": "0",
+      "key": "default",
       "name": "Padrão",
       "description": "Notificações padrão do aplicativo",
     },
@@ -47,13 +48,13 @@ class Config {
     "task": {
       "actions": [
         NotificationAction(
-            id: ActionId.finishTask,
-            title: "Concluir",
-            showsUserInterface: true),
+          key: ActionKey.finishTask,
+          title: "Concluir",
+        ),
         NotificationAction(
-            id: ActionId.taskDetails,
-            title: "Detalhes",
-            showsUserInterface: true)
+          key: ActionKey.taskDetails,
+          title: "Detalhes",
+        )
       ]
     }
   };

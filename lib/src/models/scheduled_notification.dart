@@ -4,9 +4,9 @@ class ScheduledNotification extends LocalNotification {
   final DateTime date;
 
   ScheduledNotification(
-      {required super.title,
+      {super.actions,
+      required super.title,
       required super.content,
       required super.payload,
-      super.actions,
       required this.date});
 }
